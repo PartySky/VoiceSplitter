@@ -11,32 +11,58 @@ var activeNotesNum = 0;
 
 var voiceNum = 0;
 
+var intervalForSeparating = 4;
+
 function HandleMIDI(event) {
     if (event instanceof NoteOn) {
 
-        lastPlayedNotePitch = event.pitch;
+        var interval = Math.abs(lastPlayedNotePitch - event.pitch);
 
-        if (activeNotesNum == 0) {
-            if (voiceNum == 0) {
-                event.send();
+        if (interval > intervalForSeparating) {
+            if (activeNotesNum == 0) {
+                if (voiceNum == 0) {
+                    event.send();
+                } else {
+                    // do nothing;
+                }
             } else {
-                // do nothing;
+                if (voiceNum == 0) {
+                    // do nothing;
+                } else {
+                    event.send();
+                }
             }
         } else {
             if (voiceNum == 0) {
-                // do nothing;
-            } else {
                 event.send();
+            } else {
+                // do nothing;
             }
         }
 
+        lastPlayedNotePitch = event.pitch;
         activeNotesNum = activeNotesNum + 1;
 
     } else if (event instanceof NoteOff) {
-
 
         event.send();
 
         activeNotesNum = activeNotesNum - 1;
     }
 }
+
+// function processEvent(event, voiceNum) {
+//     if (activeNotesNum == 0) {
+//         if (voiceNum == 0) {
+//             event.send();
+//         } else {
+//             // do nothing;
+//         }
+//     } else {
+//         if (voiceNum == 0) {
+//             // do nothing;
+//         } else {
+//             event.send();
+//         }
+//     }
+// }
